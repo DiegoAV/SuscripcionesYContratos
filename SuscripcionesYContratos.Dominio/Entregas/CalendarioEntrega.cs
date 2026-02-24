@@ -1,0 +1,43 @@
+﻿using Joseco.DDD.Core.Abstractions;
+using Joseco.DDD.Core.Results;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SuscripcionesYContratos.Dominio.Entregas
+{
+    public class CalendarioEntrega : AggregateRoot
+    {
+        public Guid contratoId { get; private set; }
+        public DateOnly fecha { get; private set; }
+        public TimeOnly hora { get; private set; }
+        public CalendarioEntregaEstado estado { get; private set; }
+        public DateTime? updateAt { get; private set; }
+        public CalendarioEntrega()
+        {
+        }
+        public CalendarioEntrega(Guid contratoId, DateOnly fecha, TimeOnly hora)
+        {
+            this.contratoId = contratoId;
+            this.fecha = fecha;
+            this.hora = hora;
+            this.estado = CalendarioEntregaEstado.Programado;
+        }
+        public void ReprogramarEntrega(DateOnly nuevaFecha, TimeOnly nuevaHora)
+        {
+            if (this.estado == CalendarioEntregaEstado.Entregado)
+                throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaEntregado);
+            if (this.estado == CalendarioEntregaEstado.Cancelado)
+                throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaCancelado);
+            if (this.estado == CalendarioEntregaEstado.Reprogramado)
+                throw new DomainException(CalendarioEntregaError.CalendarioEnrtegaYaReprogramado);
+
+            this.fecha = nuevaFecha;
+            this.hora = nuevaHora;
+            this.estado = CalendarioEntregaEstado.Reprogramado;
+            this.updateAt = DateTime.UtcNow;
+        }
+    }
+}
