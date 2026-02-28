@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities
 {
@@ -12,8 +8,8 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
     internal class SuscripcionesPersistenceModel
     {
         [Key]
-        [Column("suscripcionID")]
-        public Guid suscripcionID { get; set; }
+        [Column("Id")]
+        public Guid Id { get; set; }
 
         [Required]
         [Column("nombre")]
@@ -24,19 +20,14 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
         public required string descripcion { get; set; }
 
         [Required]
-        [Column("cantidadEntregas")]
-        public required int cantidadEntregas { get; set; }
+        [Column("cantidadDias")]
+        public int cantidadDias { get; set; }
 
         [Required]
-        [Column("precio")]
-        public required decimal precio { get; set; }
-
-        [Required]
-        [Column("incluyeFinDeSemana")]
-        public required bool incluyeFinDeSemana { get; set; }
+        [Column("precioDia")]
+        public decimal precioDia { get; set; }
 
         [Column("updateAt")]
         public DateTime? updateAt { get; set; }
-
     }
 }

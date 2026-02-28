@@ -10,6 +10,7 @@ namespace SuscripcionesYContratos.Dominio.Contrato
     {
         Activo = 0,
         Cancelado = 1,
-        Expirado = 2
+        Expirado = 2,
+        Finalizado = 3
     }
 }

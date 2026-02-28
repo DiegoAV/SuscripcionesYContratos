@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Joseco.DDD.Core.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using SuscripcionesYContratos.Aplicacion;
+using SuscripcionesYContratos.Dominio.Contrato;
+using SuscripcionesYContratos.Dominio.Entregas;
 using SuscripcionesYContratos.Dominio.Suscripcion;
-using SuscripcionesYContratos.Infraestructura.Persistencia.Repositorios;
-using Joseco.DDD.Core.Abstractions;
+using SuscripcionesYContratos.Infraestructura.Mensajeria;
+using SuscripcionesYContratos.Infraestructura.Outbox;
 using SuscripcionesYContratos.Infraestructura.Persistencia;
+using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio;
+using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia;
+using SuscripcionesYContratos.Infraestructura.Persistencia.Repositorios;
+using System.Reflection;
 
 namespace SuscripcionesYContratos.Infraestructura
 {
@@ -18,23 +20,28 @@ namespace SuscripcionesYContratos.Infraestructura
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // Aquí puedes registrar tus servicios de infraestructura, como repositorios, servicios de acceso a datos, etc.
-            // Por ejemplo:
-            // services.AddScoped<ISuscripcionesRepository, SuscripcionesRepository>();
-            // services.AddScoped<IContratosRepository, ContratosRepository>();
-
             services.AddAplicacion()
                 .AddPersistencia(configuration);
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+            services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
+            services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+            services.AddHostedService<OutboxProcessorBackgroundService>();
+
             return services;
         }
-        
+
         private static void AddPersistencia(this IServiceCollection services, IConfiguration configuration)
         {
-            // Aquí puedes configurar tu contexto de base de datos, por ejemplo:
-            // services.AddDbContext<MiDbContext>(options =>
-            //     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<ISuscripcionesRepo, SuscripcionRepo>();
+            var cs = configuration.GetConnectionString("DefaultConnection");
 
+            services.AddDbContext<PersistenceDbContext>(options => options.UseNpgsql(cs));
+            services.AddDbContext<DomainDbContext>(options => options.UseNpgsql(cs));
+
+            services.AddScoped<ISuscripcionesRepo, SuscripcionRepo>();
+            services.AddScoped<IContratosRepo, ContratoRepo>();
+            services.AddScoped<ICalendarioEntregaRepo, CalendarioEntregaRepo>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }

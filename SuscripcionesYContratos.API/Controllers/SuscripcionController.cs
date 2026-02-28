@@ -1,7 +1,9 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SuscripcionesYContratos.Aplicacion.Suscripciones.ActualizarSuscripcion;
 using SuscripcionesYContratos.Aplicacion.Suscripciones.CrearSuscripcion;
+using SuscripcionesYContratos.Aplicacion.Suscripciones.ListarSuscripciones;
+using SuscripcionesYContratos.Aplicacion.Suscripciones.ObtenerSuscripcion;
 
 namespace SuscripcionesYContratos.API.Controllers
 {
@@ -19,9 +21,37 @@ namespace SuscripcionesYContratos.API.Controllers
         public async Task<IActionResult> CrearSuscripcion([FromBody] CrearSuscripcionCommand command)
         {
             var result = await _mediator.Send(command);
+            return Ok(result);
+        }
 
-            //return Task.FromResult<IActionResult>(Ok("Crear Suscripcion"));
+        [HttpGet]
+        public async Task<IActionResult> ListarSuscripciones(CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new ListarSuscripcionesQuery(), cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> ActualizarSuscripcion(
+            [FromRoute] Guid id,
+            [FromBody] ActualizarSuscripcionBody body,
+            CancellationToken cancellationToken)
+        {
+            var command = new ActualizarSuscripcionCommand(
+                id,
+                body.nombre,
+                body.descripcion,
+                body.cantidadDias,
+                body.precioDia);
+
+            var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
     }
+
+    public sealed record ActualizarSuscripcionBody(
+        string? nombre,
+        string? descripcion,
+        int? cantidadDias,
+        decimal? precioDia);
 }

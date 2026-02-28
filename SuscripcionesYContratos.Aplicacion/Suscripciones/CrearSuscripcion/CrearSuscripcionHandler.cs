@@ -22,7 +22,7 @@ namespace SuscripcionesYContratos.Aplicacion.Suscripciones.CrearSuscripcion
         public async Task<Result<Guid>> Handle(CrearSuscripcionCommand request, CancellationToken cancellationToken)
         {
             Guid guid = Guid.NewGuid();
-            var suscripcion = new Dominio.Suscripcion.Suscripciones(guid, request.nombre, request.descripcion, request.cantidadEntregas, request.precio, request.incluyeFinDeSemana);
+            var suscripcion = new Dominio.Suscripcion.Suscripciones(guid, request.nombre, request.descripcion, request.cantidadDias, request.precioDia);
             //  var susb = new Suscripciones(request.suscripcionID, request.nombre, request.descripcion, request.cantidadEntregas, request.precio, request.incluyeFinDeSemana);
 
             await _suscripcionesRepo.AddAsync(suscripcion);

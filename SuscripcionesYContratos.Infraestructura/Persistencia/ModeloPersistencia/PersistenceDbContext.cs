@@ -1,43 +1,44 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Update;
+﻿using Joseco.DDD.Core.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using SuscripcionesYContratos.Dominio.Contrato;
 using SuscripcionesYContratos.Dominio.Entregas;
 using SuscripcionesYContratos.Dominio.Suscripcion;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using SuscripcionesYContratos.Infraestructura.Outbox;
+using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities;
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia
 {
     internal class PersistenceDbContext : DbContext, IDatabase
     {
-        public DbSet<Suscripciones> Suscripciones { get; set; }
-        public DbSet<Contratos> Contratos { get; set; }
-        public DbSet<CalendarioEntrega> Entregas { get; set; }
-
-        public Func<QueryContext, TResult> CompileQuery<TResult>(Expression query, bool async)
+        public PersistenceDbContext(DbContextOptions<PersistenceDbContext> options) : base(options)
         {
-            throw new NotImplementedException();
         }
 
-        public Expression<Func<QueryContext, TResult>> CompileQueryExpression<TResult>(Expression query, bool async, IReadOnlySet<string> nonNullableReferenceTypeParameters)
+        public DbSet<SuscripcionesPersistenceModel> Suscripciones { get; set; }
+        public DbSet<ContratosPersistenceModel> Contratos { get; set; }
+        public DbSet<CalendarioEntregaPersistenceModel> Entregas { get; set; }
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            throw new NotImplementedException();
+            modelBuilder.Ignore<DomainEvent>();
+
+            modelBuilder.Entity<OutboxMessage>(b =>
+            {
+                b.ToTable("OutboxMessages");
+                b.HasKey(x => x.Id);
+                b.Property(x => x.Type).HasMaxLength(400).IsRequired();
+                b.Property(x => x.Payload).IsRequired();
+                b.Property(x => x.OccurredOnUtc).IsRequired();
+                b.HasIndex(x => x.ProcessedOnUtc);
+            });
+
+            base.OnModelCreating(modelBuilder);
         }
 
-        public int SaveChanges(IList<IUpdateEntry> entries)
+        public void Migrate()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync(IList<IUpdateEntry> entries, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
+            Database.Migrate();
         }
     }
 }

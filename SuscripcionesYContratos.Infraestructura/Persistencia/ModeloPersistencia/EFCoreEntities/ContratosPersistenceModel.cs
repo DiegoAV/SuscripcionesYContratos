@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities
 {
@@ -12,46 +9,58 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
     internal class ContratosPersistenceModel
     {
         [Key]
-        [Column("contratoId")]
-        public Guid contratoId { get; set; }
-        
+        [Column("Id")]
+        public Guid Id { get; set; }
+
         [Required]
         [Column("pacienteId")]
-        public required Guid pacienteId { get; set; }
+        public Guid pacienteId { get; set; }
 
         [Required]
         [Column("suscripcionId")]
-        public required Guid suscripcionId { get; set; }
+        public Guid suscripcionId { get; set; }
+
         public required SuscripcionesPersistenceModel Suscripcion { get; set; }
 
         [Required]
         [Column("planId")]
-        public required Guid planId { get; set; }
+        public Guid planId { get; set; }
 
         [Required]
         [Column("hora")]
-        public required TimeOnly hora { get; set; }
+        public TimeOnly hora { get; set; }
 
         [Required]
         [Column("inicio")]
-        public required DateOnly inicio { get; set; }
+        public DateOnly inicio { get; set; }
 
         [Required]
         [Column("fin")]
-        public required DateOnly fin { get; set; }
+        public DateOnly fin { get; set; }
+
+        [Required]
+        [Column("incluyeFinDeSemana")]
+        public bool incluyeFinDeSemana { get; set; }
+
+        [Required]
+        [Column("cantidadEntregas")]
+        public int cantidadEntregas { get; set; }
+
+        [Required]
+        [Column("precioTotal")]
+        public decimal precioTotal { get; set; }
 
         [Required]
         [Column("estado")]
-        public required string estado { get; set; }
+        public int estado { get; set; }
 
         [Required]
         [Column("politicaCancelacionDias")]
-        public required int politicaCancelacionDias { get; set; }
+        public int politicaCancelacionDias { get; set; }
 
         [Column("updateAt")]
         public DateTime? updateAt { get; set; }
 
-        public List<CalendarioEntregaPersistenceModel> CalendarioEntregas { get; set; }
-
+        public List<CalendarioEntregaPersistenceModel> CalendarioEntregas { get; set; } = new();
     }
 }

@@ -1,17 +1,82 @@
 ﻿using Joseco.DDD.Core.Abstractions;
+using SuscripcionesYContratos.Infraestructura.Outbox;
+using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        public Task CommitAsync(CancellationToken cancellationToken = default)
+        private readonly DomainDbContext _dbContext;
+        public UnitOfWork(DomainDbContext dbContext)
         {
-            return Task.CompletedTask;
+            _dbContext = dbContext;
         }
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            //Get domain events
+            var domainEvents = _dbContext.ChangeTracker
+                .Entries<Entity>()
+                .Where(x => x.Entity.DomainEvents.Any())
+                .Select(x =>
+                {
+                    var domainEvents = x.Entity.DomainEvents.ToImmutableArray();
+                    x.Entity.ClearDomainEvents();
+
+                    return domainEvents;
+                })
+                .SelectMany(domainEvents => domainEvents)
+                .ToList();
+
+            //var outboxMessages = domainEvents
+            //    .Select(MapToOutboxMessage)
+            //    .Where(message => message is not null)
+            //    .Cast<OutboxMessage>()
+            //    .ToList();
+
+            //if (outboxMessages.Count > 0)
+            //{
+            //    await _dbContext.OutboxMessage.AddRangeAsync(outboxMessages, cancellationToken);
+            //}
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        
+        }
+
+        //private OutboxMessage? MapToOutboxMessage(DomainEvent domainEvent)
+        //{
+        //    if (domainEvent is PackageDeliveryStatusChangedDomainEvent packageEvent)
+        //    {
+        //        var payload = new
+        //        {
+        //            packageId = packageEvent.PackageId,
+        //            driverId = packageEvent.DriverId,
+        //            number = packageEvent.Number,
+        //            deliveryStatus = packageEvent.DeliveryStatus,
+        //            incidentType = packageEvent.IncidentType,
+        //            incidentDescription = packageEvent.IncidentDescription,
+        //            deliveryEvidence = packageEvent.DeliveryEvidence,
+        //            occurredOn = packageEvent.OccurredOn,
+        //            updatedAt = packageEvent.UpdatedAt
+        //        };
+
+        //        return new OutboxMessage
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            EventName = PackageDispatchStatusUpdatedEventName,
+        //            Type = domainEvent.GetType().FullName ?? nameof(PackageDeliveryStatusChangedDomainEvent),
+        //            Content = JsonSerializer.Serialize(payload),
+        //            OccurredOnUtc = domainEvent.OccurredOn.ToUniversalTime()
+        //        };
+        //    }
+
+        //    return null;
+        //}
     }
 }
