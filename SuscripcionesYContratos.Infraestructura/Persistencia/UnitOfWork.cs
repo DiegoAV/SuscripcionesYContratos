@@ -1,26 +1,24 @@
 ﻿using Joseco.DDD.Core.Abstractions;
+using SuscripcionesYContratos.Dominio.Entregas;
 using SuscripcionesYContratos.Infraestructura.Outbox;
 using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia
 {
     internal class UnitOfWork : IUnitOfWork
     {
         private readonly DomainDbContext _dbContext;
+        private const string CalendarioEntregaCreadaEventName = "calendarioentrega.creada";
+
         public UnitOfWork(DomainDbContext dbContext)
         {
             _dbContext = dbContext;
         }
+
         public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            //Get domain events
             var domainEvents = _dbContext.ChangeTracker
                 .Entries<Entity>()
                 .Where(x => x.Entity.DomainEvents.Any())
@@ -34,49 +32,58 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia
                 .SelectMany(domainEvents => domainEvents)
                 .ToList();
 
-            //var outboxMessages = domainEvents
-            //    .Select(MapToOutboxMessage)
-            //    .Where(message => message is not null)
-            //    .Cast<OutboxMessage>()
-            //    .ToList();
+            var outboxMessages = domainEvents
+                .Select(MapToOutboxMessage)
+                .Where(message => message is not null)
+                .Cast<OutboxMessage>()
+                .ToList();
 
-            //if (outboxMessages.Count > 0)
-            //{
-            //    await _dbContext.OutboxMessage.AddRangeAsync(outboxMessages, cancellationToken);
-            //}
+            if (outboxMessages.Count > 0)
+            {
+                await _dbContext.OutboxMessages.AddRangeAsync(outboxMessages, cancellationToken);
+            }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-        
         }
 
-        //private OutboxMessage? MapToOutboxMessage(DomainEvent domainEvent)
-        //{
-        //    if (domainEvent is PackageDeliveryStatusChangedDomainEvent packageEvent)
-        //    {
-        //        var payload = new
-        //        {
-        //            packageId = packageEvent.PackageId,
-        //            driverId = packageEvent.DriverId,
-        //            number = packageEvent.Number,
-        //            deliveryStatus = packageEvent.DeliveryStatus,
-        //            incidentType = packageEvent.IncidentType,
-        //            incidentDescription = packageEvent.IncidentDescription,
-        //            deliveryEvidence = packageEvent.DeliveryEvidence,
-        //            occurredOn = packageEvent.OccurredOn,
-        //            updatedAt = packageEvent.UpdatedAt
-        //        };
+        private static DateTime EnsureUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
+        }
 
-        //        return new OutboxMessage
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            EventName = PackageDispatchStatusUpdatedEventName,
-        //            Type = domainEvent.GetType().FullName ?? nameof(PackageDeliveryStatusChangedDomainEvent),
-        //            Content = JsonSerializer.Serialize(payload),
-        //            OccurredOnUtc = domainEvent.OccurredOn.ToUniversalTime()
-        //        };
-        //    }
+        private OutboxMessage? MapToOutboxMessage(DomainEvent domainEvent)
+        {
+            if (domainEvent is CalendarioEntregaDomainEvent packageEvent)
+            {
+                var payload = new
+                {
+                    entregaId = packageEvent.entregaId,
+                    contratoId = packageEvent.contratoId,
+                    fecha = packageEvent.fecha,
+                    hora = packageEvent.hora,
+                    estado = packageEvent.estado,
+                    occurredOn = packageEvent.occurredOnUtc
+                };
 
-        //    return null;
-        //}
+                var occurredOnUtc = EnsureUtc(packageEvent.occurredOnUtc);
+
+                return new OutboxMessage
+                {
+                    Id = Guid.NewGuid(),
+                    EventName = CalendarioEntregaCreadaEventName,
+                    Type = packageEvent.GetType().AssemblyQualifiedName ?? nameof(CalendarioEntregaDomainEvent),
+                    Payload = JsonSerializer.Serialize(payload),
+                    OccurredOnUtc = occurredOnUtc
+                };
+            }
+
+            return null;
+        }
     }
 }

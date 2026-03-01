@@ -9,7 +9,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio.Con
         public void Configure(EntityTypeBuilder<CalendarioEntrega> builder)
         {
             // Tabla real en BD (según migraciones): "Entregas"
-            builder.ToTable("Entregas");
+            builder.ToTable("CalendarioEntrega");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.contratoId).IsRequired();
@@ -17,7 +17,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio.Con
             builder.Property(x => x.fecha).IsRequired();
 
             // Enum -> int (evita integer vs text)
-            builder.Property(x => x.estado).HasConversion<int>().IsRequired();
+            builder.Property(x => x.estado).IsRequired();
 
             builder.Ignore("_domainEvents");
             builder.Ignore(x => x.DomainEvents);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SuscripcionesYContratos.Dominio.Entregas
 {
@@ -24,6 +25,7 @@ namespace SuscripcionesYContratos.Dominio.Entregas
             this.fecha = fecha;
             this.hora = hora;
             this.estado = CalendarioEntregaEstado.Programado;
+            AddStatusChangedDomainEvent();
         }
         public void ReprogramarEntrega(DateOnly nuevaFecha, TimeOnly nuevaHora)
         {
@@ -38,6 +40,11 @@ namespace SuscripcionesYContratos.Dominio.Entregas
             this.hora = nuevaHora;
             this.estado = CalendarioEntregaEstado.Reprogramado;
             this.updateAt = DateTime.UtcNow;
+        }
+
+        private void AddStatusChangedDomainEvent()
+        {
+            AddDomainEvent(new CalendarioEntregaDomainEvent(contratoId, contratoId, fecha, hora, (int)estado, DateTime.UtcNow));
         }
     }
 }

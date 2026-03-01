@@ -7,6 +7,7 @@ using SuscripcionesYContratos.Dominio.Contrato;
 using SuscripcionesYContratos.Dominio.Entregas;
 using SuscripcionesYContratos.Dominio.Suscripcion;
 using SuscripcionesYContratos.Infraestructura.Mensajeria;
+using SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimetario_creado;
 using SuscripcionesYContratos.Infraestructura.Outbox;
 using SuscripcionesYContratos.Infraestructura.Persistencia;
 using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio;
@@ -23,11 +24,18 @@ namespace SuscripcionesYContratos.Infraestructura
             services.AddAplicacion()
                 .AddPersistencia(configuration);
 
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
-            services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
-            services.AddHostedService<OutboxProcessorBackgroundService>();
+            /* Consumidor */
+            services.AddHostedService<PlanAlimentarioCreado>();
+
+            /* Publicador */
+            services.AddHostedService<OutboxPublisherService>();
+
+            // services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+            // services.AddHostedService<OutboxProcessorBackgroundService>();
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             return services;
         }

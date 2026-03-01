@@ -8,9 +8,9 @@ public sealed class RabbitMqOptions
     public string Password { get; init; } = "rabbit_mq";
     public string VirtualHost { get; init; } = "/";
     public string Exchange { get; init; } = "outbox.events";
-    //public string InputQueueName { get; set; } = "produccion.paquete-despacho-creado ";
-    //public string InputRoutingKey { get; set; } = "produccion.paquete-despacho-creado";
-    public string OutputRoutingKey { get; set; } = "";
+    public string InputQueueName { get; set; } = "planes.plan-alimetario.creado";
+    public string InputRoutingKey { get; set; } = "planes.plan-alimetario.creado";
+    public string OutputRoutingKey { get; set; } = "calendarioentrega.creada suscripcion.creada";
     public bool DeclareTopology { get; set; } = false;
     public int ReconnectDelaySeconds { get; set; } = 10;
     public ushort PrefetchCount { get; set; } = 10;

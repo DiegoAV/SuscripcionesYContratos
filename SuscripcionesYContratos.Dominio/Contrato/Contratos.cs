@@ -28,6 +28,7 @@ namespace SuscripcionesYContratos.Dominio.Contrato
         }
 
         public Contratos(
+            Guid id,
             Guid pacienteId,
             Guid suscripcionId,
             Guid planId,
@@ -37,7 +38,7 @@ namespace SuscripcionesYContratos.Dominio.Contrato
             bool incluyeFinDeSemana,
             int cantidadEntregas,
             decimal precioTotal,
-            int politicaCancelacionDias)
+            int politicaCancelacionDias):base(id)
         {
             this.pacienteId = pacienteId;
             this.suscripcionId = suscripcionId;

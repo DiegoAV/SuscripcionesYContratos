@@ -33,6 +33,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio
             {
                 b.ToTable("OutboxMessages");
                 b.HasKey(x => x.Id);
+                b.Property(x => x.EventName).HasColumnName("eventname").IsRequired();
                 b.Property(x => x.Type).HasMaxLength(400).IsRequired();
                 b.Property(x => x.Payload).IsRequired();
                 b.Property(x => x.OccurredOnUtc).IsRequired();

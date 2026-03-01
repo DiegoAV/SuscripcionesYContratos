@@ -31,6 +31,11 @@ namespace SuscripcionesYContratos.Infraestructura.Migrations
                     b.Property<string>("Error")
                         .HasColumnType("text");
 
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("eventname");
+
                     b.Property<DateTime>("OccurredOnUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -55,18 +60,17 @@ namespace SuscripcionesYContratos.Infraestructura.Migrations
 
             modelBuilder.Entity("SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities.CalendarioEntregaPersistenceModel", b =>
                 {
-                    b.Property<Guid>("entregaId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("entregaId");
+                        .HasColumnName("Id");
 
                     b.Property<Guid>("contratoId")
                         .HasColumnType("uuid")
                         .HasColumnName("contratoId");
 
-                    b.Property<string>("estado")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<int>("estado")
+                        .HasColumnType("integer")
                         .HasColumnName("estado");
 
                     b.Property<DateOnly>("fecha")
@@ -81,7 +85,7 @@ namespace SuscripcionesYContratos.Infraestructura.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updateAt");
 
-                    b.HasKey("entregaId");
+                    b.HasKey("Id");
 
                     b.HasIndex("contratoId");
 

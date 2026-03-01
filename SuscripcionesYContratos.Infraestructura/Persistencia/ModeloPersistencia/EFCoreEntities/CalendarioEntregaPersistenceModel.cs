@@ -12,8 +12,8 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
     internal class CalendarioEntregaPersistenceModel
     {
         [Key]
-        [Column("entregaId")]
-        public Guid entregaId { get; set; }
+        [Column("Id")]
+        public Guid Id { get; set; }
 
         [Required]
         [Column("contratoId")]
@@ -30,7 +30,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
 
         [Required]
         [Column("estado")]
-        public required string estado { get; set; }
+        public required int estado { get; set; }
         
         [Column("updateAt")]
         public DateTime? updateAt { get; set; }

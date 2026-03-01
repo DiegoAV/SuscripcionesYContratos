@@ -43,6 +43,7 @@ namespace SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato
             var precioTotal = suscripcion.precioDia * cantidadEntregas;
 
             var contrato = new Dominio.Contrato.Contratos(
+                id: Guid.NewGuid(),
                 pacienteId: request.pacienteId,
                 suscripcionId: request.suscripcionId,
                 planId: request.planId,
@@ -58,6 +59,9 @@ namespace SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato
             contrato.SetPoliticaCancelacionDias(request.politicaCancelacionDias);
 
             await _contratosRepo.AddAsync(contrato);
+            // agrega 1 contrato, pero no se han agregado las entregas al calendario, por eso se hace commit aquí para generar el Id del contrato y usarlo en las entregas
+            await _unitOfWork.CommitAsync(cancellationToken);
+
 
             // Crear CalendarioEntrega por cada día del rango (inclusive)
             var fecha = contrato.inicio;

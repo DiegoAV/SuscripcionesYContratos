@@ -5,8 +5,9 @@ namespace SuscripcionesYContratos.Infraestructura.Outbox;
 public sealed class OutboxMessage
 {
     public Guid Id { get; set; }
-    public DateTime OccurredOnUtc { get; set; }
 
+    public string EventName { get; set; } = default!;
+    public DateTime OccurredOnUtc { get; set; }
     public string Type { get; set; } = default!;
     public string Payload { get; set; } = default!;
 
