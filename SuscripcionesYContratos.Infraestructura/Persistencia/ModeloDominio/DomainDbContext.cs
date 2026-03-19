@@ -28,7 +28,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            
+
             modelBuilder.Entity<OutboxMessage>(b =>
             {
                 b.ToTable("OutboxMessages");

@@ -18,8 +18,8 @@ namespace SuscripcionesYContratos.Aplicacion
             // services.AddScoped<ISuscripcionesService, SuscripcionesService>();
             // services.AddScoped<IContratosService, ContratosService>();
             services.AddDominio();
-            services.AddMediatR(cfg => 
-            { 
+            services.AddMediatR(cfg =>
+            {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
             return services;

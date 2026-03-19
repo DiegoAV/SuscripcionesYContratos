@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Dominio.Entregas
 {
-     public enum CalendarioEntregaEstado
+    public enum CalendarioEntregaEstado
     {
         Programado = 0,
         Reprogramado = 1,

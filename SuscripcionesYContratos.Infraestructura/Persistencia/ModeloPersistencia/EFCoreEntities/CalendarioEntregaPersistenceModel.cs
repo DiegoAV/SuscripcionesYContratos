@@ -23,7 +23,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
         [Required]
         [Column("fecha")]
         public required DateOnly fecha { get; set; }
-        
+
         [Required]
         [Column("hora")]
         public required TimeOnly hora { get; set; }
@@ -31,7 +31,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistenci
         [Required]
         [Column("estado")]
         public required int estado { get; set; }
-        
+
         [Column("updateAt")]
         public DateTime? updateAt { get; set; }
     }

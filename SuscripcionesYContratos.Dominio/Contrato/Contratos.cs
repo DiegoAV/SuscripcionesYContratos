@@ -38,7 +38,7 @@ namespace SuscripcionesYContratos.Dominio.Contrato
             bool incluyeFinDeSemana,
             int cantidadEntregas,
             decimal precioTotal,
-            int politicaCancelacionDias):base(id)
+            int politicaCancelacionDias) : base(id)
         {
             this.pacienteId = pacienteId;
             this.suscripcionId = suscripcionId;

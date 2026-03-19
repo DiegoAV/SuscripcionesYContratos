@@ -98,7 +98,7 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
             {
                 return;
             }
-            
+
             var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
             _logger.LogInformation("Mensaje recibido en {Queue}. Body: {Body}", _options.InputQueueName, raw);
             var payload = null as PlanAlimentarioPayload;
@@ -117,9 +117,9 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
 
             try
             {
-            //    var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+                //    var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
                 // var payload = JsonSerializer.Deserialize<PlanAlimentarioPayload>(raw, PayloadJsonOptions);
-            //    var payload = ExtractPayload(raw);
+                //    var payload = ExtractPayload(raw);
 
 
                 if (payload is null)
@@ -143,15 +143,15 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
 
                 using var scope = _scopeFactory.CreateScope();
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                
+
                 /* Crear Contrato */
                 var suscripcion = await mediator.Send(new ObtenerSuscripcionQuery(payload.idSubscription), stoppingToken);
-                
+
                 if (suscripcion is null)
-                    return ;
+                    return;
 
                 if (suscripcion.Value.cantidadDias <= 0)
-                    return ;
+                    return;
 
                 var incluyeFinDeSemana = false; // Asumimos que el plan alimentario incluye fines de semana, pero esto podría venir en el payload si es necesario
 

@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+echo ">>> Formato .NET (dotnet format --verify-no-changes)…"
+dotnet format --verify-no-changes
+if [ $? -ne 0 ]; then
+  echo "XKO Formato incorrecto. Ejecuta 'dotnet format' para corregir antes del commit."
+  exit 1
+fi
+
+echo ">>> Compilación rápida (build:check)…"
+npm run -s build:check
+if [ $? -ne 0 ]; then
+  echo "XKO Error de compilación. Corrige antes de commitear."
+  exit 1
+fi
+
+echo "WOK Pre-commit OK."

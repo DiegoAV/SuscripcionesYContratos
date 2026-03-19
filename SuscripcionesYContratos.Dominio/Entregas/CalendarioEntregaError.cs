@@ -33,11 +33,11 @@ namespace SuscripcionesYContratos.Dominio.Entregas
                 "El calendario de entrega ya se encuentra entregado.",
                 ErrorType.Conflict);
 
-         public static readonly Error CalendarioEntregaYaCancelado =
-            new(
-                "CalendarioEntrega.YaCancelado",
-                "El calendario de entrega ya se encuentra cancelado.",
-                ErrorType.Conflict);
+        public static readonly Error CalendarioEntregaYaCancelado =
+           new(
+               "CalendarioEntrega.YaCancelado",
+               "El calendario de entrega ya se encuentra cancelado.",
+               ErrorType.Conflict);
 
         public static readonly Error ContratoNoExistente =
             new(
