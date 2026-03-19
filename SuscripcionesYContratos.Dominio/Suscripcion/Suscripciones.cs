@@ -1,5 +1,8 @@
 ﻿using Joseco.DDD.Core.Abstractions;
 using Joseco.DDD.Core.Results;
+using SuscripcionesYContratos.Dominio.Contrato;
+using SuscripcionesYContratos.Dominio.Entregas;
+using SuscripcionesYContratos.Dominio.Suscripcion.Eventos;
 using System;
 
 namespace SuscripcionesYContratos.Dominio.Suscripcion
@@ -28,6 +31,8 @@ namespace SuscripcionesYContratos.Dominio.Suscripcion
             this.descripcion = descripcion;
             this.cantidadDias = cantidadDias;
             this.precioDia = precioDia;
+            AddStatusChangedDomainEvent();
+
         }
 
         public void SetNombre(string nuevoNombre)
@@ -63,6 +68,13 @@ namespace SuscripcionesYContratos.Dominio.Suscripcion
 
             cantidadDias = nuevosDias;
             updateAt = DateTime.UtcNow;
+        }
+
+
+        private void AddStatusChangedDomainEvent()
+        {
+            AddDomainEvent(new SuscripcionChangeDomainEvent(Id, nombre, descripcion, cantidadDias, precioDia, 0, DateTime.UtcNow));
+            //AddDomainEvent(new SuscripcionChangeDomainEvent(suscripcionId, nombre, descripcion, cantidadDias, precioDia, (int)estado, DateTime.UtcNow));
         }
     }
 }

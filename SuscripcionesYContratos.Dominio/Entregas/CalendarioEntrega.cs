@@ -1,5 +1,6 @@
 ﻿using Joseco.DDD.Core.Abstractions;
 using Joseco.DDD.Core.Results;
+using SuscripcionesYContratos.Dominio.Entregas.Eventos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

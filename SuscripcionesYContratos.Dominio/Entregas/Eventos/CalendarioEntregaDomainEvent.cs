@@ -1,6 +1,6 @@
 using Joseco.DDD.Core.Abstractions;
 
-namespace SuscripcionesYContratos.Dominio.Entregas;
+namespace SuscripcionesYContratos.Dominio.Entregas.Eventos;
 
 public sealed record CalendarioEntregaDomainEvent(
     Guid entregaId,

@@ -1,5 +1,7 @@
 ﻿using Joseco.DDD.Core.Abstractions;
 using SuscripcionesYContratos.Dominio.Entregas;
+using SuscripcionesYContratos.Dominio.Entregas.Eventos;
+using SuscripcionesYContratos.Dominio.Suscripcion.Eventos;
 using SuscripcionesYContratos.Infraestructura.Outbox;
 using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloDominio;
 using System.Collections.Immutable;
@@ -11,6 +13,8 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia
     {
         private readonly DomainDbContext _dbContext;
         private const string CalendarioEntregaCreadaEventName = "calendarioentrega.creada";
+        private const string SuscripcionCreadaEventName = "suscripcion.creada";
+
 
         public UnitOfWork(DomainDbContext dbContext)
         {
@@ -59,25 +63,50 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia
 
         private OutboxMessage? MapToOutboxMessage(DomainEvent domainEvent)
         {
-            if (domainEvent is CalendarioEntregaDomainEvent packageEvent)
+            if (domainEvent is CalendarioEntregaDomainEvent calendarEvent)
             {
                 var payload = new
                 {
-                    entregaId = packageEvent.entregaId,
-                    contratoId = packageEvent.contratoId,
-                    fecha = packageEvent.fecha,
-                    hora = packageEvent.hora,
-                    estado = packageEvent.estado,
-                    occurredOn = packageEvent.occurredOnUtc
+                    entregaId = calendarEvent.entregaId,
+                    contratoId = calendarEvent.contratoId,
+                    fecha = calendarEvent.fecha,
+                    hora = calendarEvent.hora,
+                    estado = calendarEvent.estado,
+                    occurredOn = calendarEvent.occurredOnUtc
                 };
 
-                var occurredOnUtc = EnsureUtc(packageEvent.occurredOnUtc);
+                var occurredOnUtc = EnsureUtc(calendarEvent.occurredOnUtc);
 
                 return new OutboxMessage
                 {
                     Id = Guid.NewGuid(),
                     EventName = CalendarioEntregaCreadaEventName,
-                    Type = packageEvent.GetType().AssemblyQualifiedName ?? nameof(CalendarioEntregaDomainEvent),
+                    Type = calendarEvent.GetType().AssemblyQualifiedName ?? nameof(CalendarioEntregaDomainEvent),
+                    Payload = JsonSerializer.Serialize(payload),
+                    OccurredOnUtc = occurredOnUtc
+                };
+            }
+
+            if (domainEvent is SuscripcionChangeDomainEvent suscripcionEvent)
+            {
+                var payload = new
+                {
+                    suscripcionId = suscripcionEvent.suscripcionId,
+                    nombre = suscripcionEvent.nombre,
+                    descripcion = suscripcionEvent.descripcion,
+                    cantidadDias = suscripcionEvent.cantidadDias,
+                    precioDia = suscripcionEvent.precioDia,
+                    estado = suscripcionEvent.estado,
+                    occurredOn = suscripcionEvent.occurredOnUtc
+                };
+
+                var occurredOnUtc = EnsureUtc(suscripcionEvent.occurredOnUtc);
+
+                return new OutboxMessage
+                {
+                    Id = Guid.NewGuid(),
+                    EventName = CalendarioEntregaCreadaEventName,
+                    Type = suscripcionEvent.GetType().AssemblyQualifiedName ?? nameof(SuscripcionChangeDomainEvent),
                     Payload = JsonSerializer.Serialize(payload),
                     OccurredOnUtc = occurredOnUtc
                 };

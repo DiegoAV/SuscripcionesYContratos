@@ -38,5 +38,11 @@ namespace SuscripcionesYContratos.Dominio.Entregas
                 "CalendarioEntrega.YaCancelado",
                 "El calendario de entrega ya se encuentra cancelado.",
                 ErrorType.Conflict);
+
+        public static readonly Error ContratoNoExistente =
+            new(
+                "CalendarioEntrega.ContratoNoExistente",
+                "El Contrato No Existe.",
+                ErrorType.Conflict);
     }
 }

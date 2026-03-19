@@ -69,7 +69,7 @@ namespace SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato
             {
                 if (contrato.incluyeFinDeSemana || EsDiaLaborable(fecha))
                 {
-                    var entrega = new CalendarioEntrega(
+                    var entrega = new Dominio.Entregas.CalendarioEntrega(
                         contratoId: contrato.Id,
                         fecha: fecha,
                         hora: contrato.hora);
@@ -81,6 +81,8 @@ namespace SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
+            
+            //await _calendarioEntregaRepo.
 
             return Result.Success(contrato.Id);
         }

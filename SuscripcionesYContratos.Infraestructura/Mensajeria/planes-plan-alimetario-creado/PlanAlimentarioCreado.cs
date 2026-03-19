@@ -99,10 +99,28 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
                 return;
             }
             
+            var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+            _logger.LogInformation("Mensaje recibido en {Queue}. Body: {Body}", _options.InputQueueName, raw);
+            var payload = null as PlanAlimentarioPayload;
+
             try
             {
-                var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-                var payload = JsonSerializer.Deserialize<PlanAlimentarioPayload>(raw, PayloadJsonOptions);
+                payload = ExtractPayload(raw);
+            }
+            catch (JsonException)
+            {
+                _logger.LogWarning("Mensaje con formato JSON inválido en {Queue}. Body: {Body}", _options.InputQueueName, raw);
+                _channel.BasicAck(eventArgs.DeliveryTag, false);
+                return;
+            }
+
+
+            try
+            {
+            //    var raw = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+                // var payload = JsonSerializer.Deserialize<PlanAlimentarioPayload>(raw, PayloadJsonOptions);
+            //    var payload = ExtractPayload(raw);
+
 
                 if (payload is null)
                 {
@@ -127,7 +145,7 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 
                 /* Crear Contrato */
-                var suscripcion = await mediator.Send(new ObtenerSuscripcionQuery(payload.idSuscripcion), stoppingToken);
+                var suscripcion = await mediator.Send(new ObtenerSuscripcionQuery(payload.idSubscription), stoppingToken);
                 
                 if (suscripcion is null)
                     return ;
@@ -139,7 +157,7 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
 
                 var command = new CrearContratoCommand(
                     pacienteId: payload.idPatient,
-                    suscripcionId: payload.idSuscripcion,
+                    suscripcionId: payload.idSubscription,
                     planId: payload.id,
                     hora: new TimeOnly(6, 30, 0),
                     inicio: payload.starDate,
@@ -152,7 +170,7 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
                 {
                     _logger.LogInformation("Contrato Creado Existosamente {Id} para el Paciente {pacienteId}",
                         payload.id,
-                        payload.idSuscripcion);
+                        payload.idSubscription);
                     _channel.BasicAck(eventArgs.DeliveryTag, false);
                     return;
                 }
@@ -197,7 +215,7 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
                 return false;
             }
 
-            if (payload.idSuscripcion == Guid.Empty)
+            if (payload.idSubscription == Guid.Empty)
             {
                 validationMessage = "idSuscription no puede ser Guid.Empty";
                 return false;
@@ -244,11 +262,35 @@ namespace SuscripcionesYContratos.Infraestructura.Mensajeria.planes_plan_alimeta
             public Guid id { get; set; }
             public Guid idNutricionist { get; set; }
             public Guid idPatient { get; set; }
-            public Guid idSuscripcion { get; set; }
+            public Guid idSubscription { get; set; }  //idSubscription
             public int totalDays { get; set; }
             public DateOnly starDate { get; set; }
             public DateOnly endDate { get; set; }
             public int totalCalories { get; set; }
+        }
+
+        private static PlanAlimentarioPayload? ExtractPayload(string raw)
+        {
+            using var document = JsonDocument.Parse(raw);
+
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            foreach (var property in document.RootElement.EnumerateObject())
+            {
+                if (!string.Equals(property.Name, "payload", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                return property.Value.ValueKind == JsonValueKind.Object
+                    ? JsonSerializer.Deserialize<PlanAlimentarioPayload>(property.Value.GetRawText(), PayloadJsonOptions)
+                    : null;
+            }
+
+            return JsonSerializer.Deserialize<PlanAlimentarioPayload>(document.RootElement.GetRawText(), PayloadJsonOptions);
         }
     }
 }
