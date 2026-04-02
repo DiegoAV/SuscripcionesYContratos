@@ -2,7 +2,7 @@ services:
   api:
     image: tosmuer/suscripcionesycontratos-api:latest
     ports:
-      - "8080:8080"
+      - "6670:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__DefaultConnection: "Server=db;Port=5432;Database=SuscripcionesYContratos;Username=postgres;Password=3541079;Include Error Detail=true"
