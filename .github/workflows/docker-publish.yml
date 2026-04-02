@@ -19,6 +19,8 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 30m   # or 60m if builds are slow
+          timeout: 60s           # SSH connect timeout (optional)
           script: |
             set -e
 
@@ -40,4 +42,9 @@ jobs:
 
             # Deploy
             cd SuscripcionesYContratos
-            docker-compose up -d
+            
+            # Recommended: pull/build explicitly so you see where time is spent
+            docker-compose pull --quiet || true
+            docker-compose build --pull
+      
+            docker-compose up -d --remove-orphans
