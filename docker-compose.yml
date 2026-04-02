@@ -1,8 +1,6 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: tosmuer/suscripcionesycontratos-api:latest
     ports:
       - "8080:8080"
     environment:
@@ -13,12 +11,12 @@ services:
 
   db:
     image: postgres:16
+    ports:
+      - "6669:5432"
     environment:
       POSTGRES_DB: SuscripcionesYContratos
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 3541079
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
