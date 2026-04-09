@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           source: docker-compose.yml
           target: ${{ vars.DEPLOY_APP_DIR }}
-          strip_components: 1
+          strip_components: 0
       - name: Deploy via SSH (docker compose with release tag)
         uses: appleboy/ssh-action@v1.0.3
         with:
