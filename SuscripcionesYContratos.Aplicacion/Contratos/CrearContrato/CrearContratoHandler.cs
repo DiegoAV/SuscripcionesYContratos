@@ -7,7 +7,7 @@ using SuscripcionesYContratos.Dominio.Suscripcion;
 
 namespace SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato
 {
-    internal sealed class CrearContratoHandler : IRequestHandler<CrearContratoCommand, Result<Guid>>
+    public sealed class CrearContratoHandler : IRequestHandler<CrearContratoCommand, Result<Guid>>
     {
         private readonly IContratosRepo _contratosRepo;
         private readonly ISuscripcionesRepo _suscripcionesRepo;
