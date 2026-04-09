@@ -12,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SuscripcionesYContratos.Aplicacion.CalendarioEntrega.CrearCalendarioEntrega
 {
-    internal sealed class CrearCalendarioEntregaHandler : IRequestHandler<CrearCalendarioEntregaCommand, Result<Guid>>
+    public sealed class CrearCalendarioEntregaHandler : IRequestHandler<CrearCalendarioEntregaCommand, Result<Guid>>
     {
         private readonly ICalendarioEntregaRepo _calendarioEntregaRepo;
         private readonly IContratosRepo _contratosRepo;

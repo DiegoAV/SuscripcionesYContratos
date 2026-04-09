@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SuscripcionesYContratos.Aplicacion.Suscripciones.CrearSuscripcion
 {
-    internal class CrearSuscripcionHandler : IRequestHandler<CrearSuscripcionCommand, Result<Guid>>
+    public class CrearSuscripcionHandler : IRequestHandler<CrearSuscripcionCommand, Result<Guid>>
     {
         private readonly ISuscripcionesRepo _suscripcionesRepo;
         private readonly IUnitOfWork _unitOfWork;

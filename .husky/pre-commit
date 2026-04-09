@@ -1,17 +1,10 @@
 #!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-echo ">>> Formato .NET (dotnet format --verify-no-changes)…"
+set -e
+
+echo "[pre-commit] dotnet format (verify)"
 dotnet format --verify-no-changes
-if [ $? -ne 0 ]; then
-  echo "XKO Formato incorrecto. Ejecuta 'dotnet format' para corregir antes del commit."
-  exit 1
-fi
 
-echo ">>> Compilación rápida (build:check)…"
-npm run -s build:check
-if [ $? -ne 0 ]; then
-  echo "XKO Error de compilación. Corrige antes de commitear."
-  exit 1
-fi
-
-echo "WOK Pre-commit OK."
+echo "[pre-commit] dotnet test"
+dotnet test --configuration Release
