@@ -50,6 +50,6 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"DiegoAV_SuscripcionesYContratos" /o:"diegoav" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner begin /k:"DiegoAV_SuscripcionesYContratos" /o:"diegoav" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         dotnet build --no-restore
-        ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
