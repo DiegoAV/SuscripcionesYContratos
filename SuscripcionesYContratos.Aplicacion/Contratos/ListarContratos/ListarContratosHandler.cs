@@ -5,7 +5,7 @@ using SuscripcionesYContratos.Dominio.Contrato;
 
 namespace SuscripcionesYContratos.Aplicacion.Contratos.ListarContratos;
 
-internal sealed class ListarContratosHandler : IRequestHandler<ListarContratosQuery, Result<IReadOnlyList<ContratoDto>>>
+public sealed class ListarContratosHandler : IRequestHandler<ListarContratosQuery, Result<IReadOnlyList<ContratoDto>>>
 {
     private readonly IContratosRepo _repo;
 
