@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities
 {
     [Table("CalendarioEntrega")]
-    internal class CalendarioEntregaPersistenceModel
+    public class CalendarioEntregaPersistenceModel
     {
         [Key]
         [Column("Id")]

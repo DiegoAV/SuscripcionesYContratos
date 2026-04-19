@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EFCoreEntities
 {
     [Table("Contratos")]
-    internal class ContratosPersistenceModel
+    public class ContratosPersistenceModel
     {
         [Key]
         [Column("Id")]

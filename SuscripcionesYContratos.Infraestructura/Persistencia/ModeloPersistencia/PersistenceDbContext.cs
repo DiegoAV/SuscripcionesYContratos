@@ -8,7 +8,7 @@ using SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia.EF
 
 namespace SuscripcionesYContratos.Infraestructura.Persistencia.ModeloPersistencia
 {
-    internal class PersistenceDbContext : DbContext, IDatabase
+    public class PersistenceDbContext : DbContext, IDatabase
     {
         public PersistenceDbContext(DbContextOptions<PersistenceDbContext> options) : base(options)
         {
