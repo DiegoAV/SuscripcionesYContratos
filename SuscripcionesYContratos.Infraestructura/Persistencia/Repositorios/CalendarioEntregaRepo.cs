@@ -29,6 +29,45 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.Repositorios
             return await query.SingleOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<IReadOnlyList<CalendarioEntrega>> ListarUltimosAsync(
+            Guid? contratoId,
+            DateOnly? desde,
+            DateOnly? hasta,
+            int take,
+            CancellationToken cancellationToken)
+        {
+            var query = _dbContext.Entregas.AsNoTracking().AsQueryable();
+
+            if (contratoId.HasValue)
+                query = query.Where(x => x.contratoId == contratoId.Value);
+
+            if (desde.HasValue)
+                query = query.Where(x => x.fecha >= desde.Value);
+
+            if (hasta.HasValue)
+                query = query.Where(x => x.fecha <= hasta.Value);
+
+            // “Últimos”: ordena por fecha/hora descendente y limita el resultado
+            query = query
+                .OrderByDescending(x => x.fecha)
+                .ThenByDescending(x => x.hora)
+                .Take(take);
+
+            return await query.ToListAsync(cancellationToken);
+        }
+
+        public async Task<CalendarioEntrega?> GetUltimaEntregaDeContratoAsync(
+            Guid contratoId,
+            CancellationToken cancellationToken)
+        {
+            return await _dbContext.Entregas
+                .AsNoTracking()
+                .Where(x => x.contratoId == contratoId)
+                .OrderByDescending(x => x.fecha)
+                .ThenByDescending(x => x.hora)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public Task UpdateAsync(CalendarioEntrega calendarioEntrega)
         {
             _dbContext.Entregas.Update(calendarioEntrega);

@@ -2,11 +2,6 @@
 using Joseco.DDD.Core.Results;
 using SuscripcionesYContratos.Dominio.Entregas.Eventos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SuscripcionesYContratos.Dominio.Entregas
 {
@@ -17,9 +12,11 @@ namespace SuscripcionesYContratos.Dominio.Entregas
         public TimeOnly hora { get; private set; }
         public CalendarioEntregaEstado estado { get; private set; }
         public DateTime? updateAt { get; private set; }
+
         public CalendarioEntrega()
         {
         }
+
         public CalendarioEntrega(Guid contratoId, DateOnly fecha, TimeOnly hora)
         {
             this.contratoId = contratoId;
@@ -28,13 +25,17 @@ namespace SuscripcionesYContratos.Dominio.Entregas
             this.estado = CalendarioEntregaEstado.Programado;
             AddStatusChangedDomainEvent();
         }
+
         public void ReprogramarEntrega(DateOnly nuevaFecha, TimeOnly nuevaHora)
         {
             if (this.estado == CalendarioEntregaEstado.Entregado)
                 throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaEntregado);
             if (this.estado == CalendarioEntregaEstado.Cancelado)
                 throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaCancelado);
-            if (this.estado == CalendarioEntregaEstado.Reprogramado)
+
+            // Permitir múltiples cambios cuando solo se modifica la hora.
+            // Solo bloquea si ya estaba reprogramado y además se intenta cambiar la fecha.
+            if (this.estado == CalendarioEntregaEstado.Reprogramado && nuevaFecha != this.fecha)
                 throw new DomainException(CalendarioEntregaError.CalendarioEnrtegaYaReprogramado);
 
             this.fecha = nuevaFecha;
