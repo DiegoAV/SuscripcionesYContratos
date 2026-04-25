@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuscripcionesYContratos.Aplicacion.CalendarioEntrega.CrearCalendarioEntrega;
 using SuscripcionesYContratos.Aplicacion.CalendarioEntrega.EditarCalendarioEntrega;
@@ -9,6 +10,7 @@ namespace SuscripcionesYContratos.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOrSuscripcion")]
     public class CalendarioEntregaController : ControllerBase
     {
         private readonly IMediator _mediator;

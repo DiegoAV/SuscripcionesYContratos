@@ -22,5 +22,11 @@ namespace SuscripcionesYContratos.Dominio.Entregas
         Task<CalendarioEntrega?> GetUltimaEntregaDeContratoAsync(
             Guid contratoId,
             CancellationToken cancellationToken);
+
+        // NUEVO: listar todas las entregas de un contrato (para cancelar contrato)
+        Task<IReadOnlyList<CalendarioEntrega>> ListByContratoIdAsync(
+            Guid contratoId,
+            bool readOnly = false,
+            CancellationToken cancellationToken = default);
     }
 }

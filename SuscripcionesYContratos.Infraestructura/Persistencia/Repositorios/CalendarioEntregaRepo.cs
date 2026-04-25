@@ -47,7 +47,6 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.Repositorios
             if (hasta.HasValue)
                 query = query.Where(x => x.fecha <= hasta.Value);
 
-            // “Últimos”: ordena por fecha/hora descendente y limita el resultado
             query = query
                 .OrderByDescending(x => x.fecha)
                 .ThenByDescending(x => x.hora)
@@ -66,6 +65,23 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia.Repositorios
                 .OrderByDescending(x => x.fecha)
                 .ThenByDescending(x => x.hora)
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<CalendarioEntrega>> ListByContratoIdAsync(
+            Guid contratoId,
+            bool readOnly = false,
+            CancellationToken cancellationToken = default)
+        {
+            var query = _dbContext.Entregas.AsQueryable();
+
+            if (readOnly)
+                query = query.AsNoTracking();
+
+            return await query
+                .Where(x => x.contratoId == contratoId)
+                .OrderBy(x => x.fecha)
+                .ThenBy(x => x.hora)
+                .ToListAsync(cancellationToken);
         }
 
         public Task UpdateAsync(CalendarioEntrega calendarioEntrega)

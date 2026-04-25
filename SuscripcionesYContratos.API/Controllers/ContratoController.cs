@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SuscripcionesYContratos.Aplicacion.Contratos.CancelarContrato;
 using SuscripcionesYContratos.Aplicacion.Contratos.CrearContrato;
 using SuscripcionesYContratos.Aplicacion.Contratos.ListarContratos;
 using SuscripcionesYContratos.Aplicacion.Contratos.ListarContratosXEstado;
@@ -9,7 +11,9 @@ namespace SuscripcionesYContratos.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContratoController : ControllerBase
+    [Authorize(Policy = "AdminOrSuscripcion")]
+
+    public sealed class ContratoController : ControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -43,6 +47,13 @@ namespace SuscripcionesYContratos.API.Controllers
         public async Task<IActionResult> ListarContratosXEstado([FromRoute] int estado, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new ListarContratosXEstadoQuery(estado), cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPut("{contratoId:guid}/cancelar")]
+        public async Task<IActionResult> CancelarContrato([FromRoute] Guid contratoId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new CancelarContratoCommand(contratoId), cancellationToken);
             return Ok(result);
         }
     }

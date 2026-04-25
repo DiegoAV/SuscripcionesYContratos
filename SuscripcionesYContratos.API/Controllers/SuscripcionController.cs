@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuscripcionesYContratos.Aplicacion.Suscripciones.ActualizarSuscripcion;
 using SuscripcionesYContratos.Aplicacion.Suscripciones.CrearSuscripcion;
@@ -9,6 +10,7 @@ namespace SuscripcionesYContratos.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOrSuscripcion")]
     public class SuscripcionController : ControllerBase
     {
         private readonly IMediator _mediator;
