@@ -15,7 +15,6 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia
         private const string CalendarioEntregaCreadaEventName = "calendarioentrega.creada";
         private const string SuscripcionCreadaEventName = "suscripcion.creada";
 
-
         public UnitOfWork(DomainDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -105,7 +104,7 @@ namespace SuscripcionesYContratos.Infraestructura.Persistencia
                 return new OutboxMessage
                 {
                     Id = Guid.NewGuid(),
-                    EventName = CalendarioEntregaCreadaEventName,
+                    EventName = SuscripcionCreadaEventName,
                     Type = suscripcionEvent.GetType().AssemblyQualifiedName ?? nameof(SuscripcionChangeDomainEvent),
                     Payload = JsonSerializer.Serialize(payload),
                     OccurredOnUtc = occurredOnUtc

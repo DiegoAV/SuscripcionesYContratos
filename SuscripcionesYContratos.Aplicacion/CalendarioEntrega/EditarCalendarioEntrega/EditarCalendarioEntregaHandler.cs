@@ -63,10 +63,15 @@ namespace SuscripcionesYContratos.Aplicacion.CalendarioEntrega.EditarCalendarioE
                 return Result.Success(entrega.Id);
             }
 
-            // 3) Cancelar: tu dominio aún no tiene método Cancelar(), así que necesito que confirmes
-            // si quieres:
-            //   A) implementar CalendarioEntrega.Cancelar() (recomendado), o
-            //   B) tratar “cancelar” como “mover al final” (no es realmente cancelar).
+            // 3) Cancelar
+            if (request.cancelar)
+            {
+                entrega.Cancelar();
+                await _repo.UpdateAsync(entrega);
+                await _unitOfWork.CommitAsync(cancellationToken);
+                return Result.Success(entrega.Id);
+            }
+
             return Result.Failure<Guid>(CalendarioEntregaError.CalendarioEntregaInvalido);
         }
     }

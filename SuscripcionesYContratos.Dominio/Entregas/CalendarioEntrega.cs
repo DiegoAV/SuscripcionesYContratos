@@ -44,6 +44,18 @@ namespace SuscripcionesYContratos.Dominio.Entregas
             this.updateAt = DateTime.UtcNow;
         }
 
+        public void Cancelar()
+        {
+            if (this.estado == CalendarioEntregaEstado.Entregado)
+                throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaEntregado);
+
+            if (this.estado == CalendarioEntregaEstado.Cancelado)
+                throw new DomainException(CalendarioEntregaError.CalendarioEntregaYaCancelado);
+
+            this.estado = CalendarioEntregaEstado.Cancelado;
+            this.updateAt = DateTime.UtcNow;
+        }
+
         private void AddStatusChangedDomainEvent()
         {
             AddDomainEvent(new CalendarioEntregaDomainEvent(contratoId, contratoId, fecha, hora, (int)estado, DateTime.UtcNow));

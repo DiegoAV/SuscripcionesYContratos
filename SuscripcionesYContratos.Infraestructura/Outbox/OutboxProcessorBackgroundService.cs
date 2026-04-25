@@ -54,8 +54,9 @@ internal sealed class OutboxProcessorBackgroundService : BackgroundService
                 {
                     try
                     {
-                        var routingKey = !string.IsNullOrWhiteSpace(_rabbitOptions.OutputRoutingKey)
-                            ? _rabbitOptions.OutputRoutingKey
+                        // FIX: la routing key debe venir del evento almacenado en outbox
+                        var routingKey = !string.IsNullOrWhiteSpace(msg.EventName)
+                            ? msg.EventName
                             : msg.Type.Replace('.', '_');
 
                         await publisher.PublishAsync(
